@@ -1,0 +1,25 @@
+{
+  "paillierPublicKey" : "AIe5knKR+KWSbYFdc4S8yLEQUMm8iKVRrH1UFC9zN6M4OFG68QX2hmRjRi/VJSCQvoHJbCelWbjul+NpSXEv2V1JWLf9pvJvV4TirmHmWSecv+DnlEkOPZHVKhh8otvrGoIdrOALdtrdp3jWOJA2qcgyigsHs0LXTuTWxUP+yVcB",
+  "totalShares" : 3,
+  "threshold" : 2,
+  "publicKeyOther" : "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCgj27TOzp4JzJtu8/BIfdK9smbD7R6LxJ/c2vGDr+lgIppQkBaMR32LLtAKwRbdBKI4Fmbc1YvmDwe1OH2343JKVk35zStxb4dRXgy26JY8rB4jOKieoNEwS/hZXgK+2yIB2DWzlEIl4H7kySCBORxPLrQLVodiTj5X3vJVH7sGwIDAQAB",
+  "encryptedPrivateKeyOther" : "4FlPFEhKDW6lCjtTnCUiK0iUTyAGFLJxZ+nMlj3ch40v8zGzHrtn8YA+B5wj6O5MDt0LK9jhYWF355zcNrJf0hDjdLsL2riW/yb12sYyQmWQIyeVyiYI8KFUpYCXxp5c5tBvh8hRg4VnlF98OrbXNs6A9NwUdHg0RJlR9KoHnNOvDLhKr8xK0rGTV65NP9x0cntAegOaeTGB09oznl60VQNsCEjrqojwb4hIIz6qgDpIDJB76qWyVsAORWob9WrALONqQt9FVhZ+cxf8nBBnonTuTBk3OCHG8Ug6p/O5lzCdMUmCNKEKI0tlB39trlJJHlmOf92jE9+L5Xd6o1yibFmsIjZTWuyNC4E+p35dNMu+ri6arHjggbnIq/5ywQm9So5XeG9nZ7jTj3ZEoTq4Q/9ecAqhnZQaAFYIe1hwn0iSzuFvs10+POx23dU4ceVV2R0kVvma6uBPBgw89McAMnb1P2lh9yqDSRDUOMTbJ7hz64ejO/KuUJ/uAfBxLSIqMSK7dOAxZubjKjixA/PflJhVOZinrTf0YyaNfmh1qnzuSm0YuATDbfimywP5Vos0Qqn7APu3C3NxuOnD+i4/ILkMYHa6hOv/GbOENXBg9jARwimio81k8i7VIBunVSsiHo4DtoXezX0ctG4YAAJvWrCZUbu50pCtjMTjjgtZDK0KC/6QQiC9Ons6OLb9CdNWgXP7qxyuIAGx9Qcz6LJsIXkvJ0VuWf1vxx3mePDAd6nujME+zwsYOI4B3dpz0X79YDuqXzQezKlUbJ2WqfhsxXL34dX1PQundm3+/yrseX1snKlwKR9bhHUSu8m+SRi7NhCB5N+hh/rYzrV6AKXGTQ==",
+  "encryptedAesKeyOther" : "KFhsfr/KBH8UT6ldAhJ+LSQTsP0XkLMH1OxUR214AEnh9FOY2drdmaB2/DUrLXlRWrj8mApLcbXeVRrzHwVkDWuFE5IDpJTsVf/CUNeU62YMDsFbIJQwdFG5zTCinl+khr6UtwqXYsp/GZd5luir1eNjcjNMJJ2qVaGl3ibMIFqrMJ+6wZu8Bbq6yJu2i8lmQnF/VonulNXpOrF8VTz8nH+5LzV2HWc7A5VLDEeYpErmykiQeo+WdDdFQ0t83sHQUPO2dursKfvDZh+QdGQaTqOLzZXxGMmyWttAhfIql0QBSn6oyWbjUiGIepnsyBbB8xR2ffz8UFS/QcPBXAOWdg==",
+  "keyDigests" : [
+    {
+      "index" : 1,
+      "digestAlgorithm" : "SHA-256",
+      "digestValue" : "rWTBmP5UsUCJ2SqEX2TKqcWfY4niYJN/oFKRyXnwmm8="
+    },
+    {
+      "index" : 2,
+      "digestAlgorithm" : "SHA-256",
+      "digestValue" : "nsGtUc+gas341rnbhuzQgd/0/xKAMg+7by1yvyXBESE="
+    },
+    {
+      "index" : 3,
+      "digestAlgorithm" : "SHA-256",
+      "digestValue" : "uPNpKX68S7aucskx0YcojNWTC1h8BFffR8QwCoNitKs="
+    }
+  ]
+}
