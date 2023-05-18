@@ -1,11 +1,8 @@
 package com.evoting.paillier.primes
 
-import cats.effect.IO
 import cats.effect.SyncIO
-import cats.effect.Sync
 import fs2.Stream
 import java.security.SecureRandom
-
 
 object PrimesGenerator {
 
@@ -27,7 +24,6 @@ object PrimesGenerator {
   def getSafePrimesStream(bitLength: Int): Stream[SyncIO, BigInt] =
     Stream(getPrimeStream(bitLength).find(p => (2 * p + 1).isProbablePrime(certainty))).repeat.flatten
 
-  
   // Create random Big Integer using SecureRandom
   def getBigIntRandomStream(bitLength: Int): Stream[SyncIO, BigInt] = Stream.eval(SyncIO(BigInt(bitLength, new SecureRandom()))).repeat
 

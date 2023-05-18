@@ -1,6 +1,5 @@
 package com.evoting.paillier
 
-import cats.effect.IO
 import cats.effect.SyncIO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import com.evoting.paillier.crypto.cryptosystem.PartialDecryption
@@ -14,8 +13,7 @@ import com.evoting.paillier.crypto.messages.Plaintext
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 import com.evoting.paillier.crypto.PaillierExceptions.EncryptionException
-
-
+import org.scalatest.Ignore
 
 class KeyStaticArbitraryTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 

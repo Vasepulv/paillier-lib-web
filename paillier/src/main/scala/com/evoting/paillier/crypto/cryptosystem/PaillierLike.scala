@@ -1,6 +1,5 @@
 package com.evoting.paillier.crypto.cryptosystem
 
-import cats.effect.IO
 import cats.effect.SyncIO
 import com.evoting.paillier.crypto.keys.PublicKeyLike
 import com.evoting.paillier.crypto.messages.CiphertextWithRandomness

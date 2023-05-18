@@ -1,5 +1,4 @@
 import org.scalajs.linker.interface.ModuleSplitStyle
-
 name := "paillier"
 organization := "com.evoting"
 
@@ -25,15 +24,12 @@ initialize := {
   assert(current == required, s"Unsupported JDK: java.specification.version $current != $required")
 }
 
-libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest"                     % "3.2.10" % Test,
-  "org.typelevel" %% "cats-effect-testing-scalatest" % "1.3.0"  % Test
-)
 
 lazy val paillier=project.in(file("."))
 .enablePlugins(ScalaJSPlugin)
 .settings(
-  scalaVersion := "2.13.6",
+  scalaVersion := "2.13.6",  
+  scalacOptions += "-Ymacro-annotations",
   scalaJSUseMainModuleInitializer := true,
 
     /* Configure Scala.js to emit modules in the optimal way to
@@ -54,16 +50,29 @@ lazy val paillier=project.in(file("."))
      */
     
 
-    libraryDependencies ++=Seq(
-  "org.scala-js"                      %%% "scalajs-dom"             % "2.4.0",
+    libraryDependencies ++=Seq( "org.scala-js" %%% "scalajs-dom" % "2.4.0",
   "org.scala-js"                      %% "scalajs-env-jsdom-nodejs" % "1.0.0",
-  "com.raquo"                         %%% "laminar"                 % "15.0.0",
-  "com.raquo"                         %%% "airstream"               % "15.0.0",
-  "com.raquo"                         %%% "domtypes"                % "17.0.0",
+  "com.github.japgolly.scalajs-react" %%% "core-ext-cats"        % "2.1.1",
+  "com.github.japgolly.scalajs-react" %%% "core-ext-cats_effect" % "2.1.1",
   "com.github.japgolly.scalajs-react" %%% "core"                    % "2.1.1"),
+
+  
+
+  libraryDependencies += "com.dedipresta" %%% "scala-crypto" % "1.0.0",
+
+  libraryDependencies += "me.shadaj" %%% "slinky-core" % "0.7.3", // core React functionality, no React DOM
+  libraryDependencies += "me.shadaj" %%% "slinky-web" % "0.7.3", // React DOM, HTML and SVG tags
+  libraryDependencies += "me.shadaj" %%% "slinky-native" % "0.7.3", // React Native components
+  libraryDependencies += "me.shadaj" %%% "slinky-hot" % "0.7.3", // Hot loading, requires react-proxy package
+   // Interop with japgolly/scalajs-react
 
   libraryDependencies += ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
   libraryDependencies += "org.scalameta" %%% "munit" % "0.7.29" % Test,
+
+  libraryDependencies ++= Seq(
+  "org.scalatest" %%% "scalatest"                     % "3.2.10" % Test,
+  "org.typelevel" %%% "cats-effect-testing-scalatest" % "1.3.0"  % Test
+),
 
 
  jsEnv := new org.scalajs.jsenv.nodejs.NodeJSEnv(),
@@ -75,28 +84,7 @@ libraryDependencies ++= Seq(
   "co.fs2"        %%% "fs2-core"             % fs2,
   "co.fs2"        %%% "fs2-io"               % fs2,
   "co.fs2"        %% "fs2-reactive-streams" % fs2
+),
+   
 )
 
-)
-
-
-//resolvers += Resolver.url("Evoting Resolver", url("s3://evoting-repo"))(Resolver.ivyStylePatterns)
-/*enablePlugins(ScalaJSPlugin)
-scalaVersion := "2.13.6"
-scalaJSUseMainModuleInitializer := true
-
-scalaJSLinkerConfig ~= {
-      _.withModuleKind(ModuleKind.ESModule)
-        .withModuleSplitStyle(
-          ModuleSplitStyle.SmallModulesFor(List("com")))
-    }
-*/
-Compile / packageSrc / publishArtifact := false
-Compile / packageDoc / publishArtifact := false
-
-publishMavenStyle := false
-
-//resolvers += Resolver.url("Evoting Resolver", url("s3://evoting-repo"))(Resolver.ivyStylePatterns)
-
-publishMavenStyle := false
-//publishTo := Some(Resolver.url("Evoting Resolver", url("s3://evoting-repo"))(Resolver.ivyStylePatterns))

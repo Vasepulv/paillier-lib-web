@@ -1,4 +1,4 @@
-package com.evoting.paillier
+
 
 import cats.data.EitherT
 import cats.effect.SyncIO
@@ -9,9 +9,9 @@ import com.evoting.paillier.crypto.cryptosystem.PartialDecryption
 import com.evoting.paillier.crypto.cryptosystem.impl.Paillier
 import com.evoting.paillier.crypto.messages.Ciphertext
 import com.evoting.paillier.crypto.messages.Plaintext
+import org.scalatest.Ignore
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
-
 
 class KeyStaticTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
@@ -56,7 +56,7 @@ class KeyStaticTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
       resultIO.asserting {
         case (keys, paillierSystem, ciphertext) =>
-          val res = ciphertext match {
+          val res:Boolean = ciphertext match {
             case Left(err)               => fail(s"Encryption failed with error: ${err.getMessage}")
             case Right(encryptedMessage) =>
               keys
@@ -304,5 +304,5 @@ class KeyStaticTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
         }))
       }
     }
-   
-}*/}
+   */
+}

@@ -6,10 +6,7 @@ import com.evoting.paillier.crypto.keys.PublicKey
 import com.evoting.paillier.primes.PrimesGenerator._
 import com.evoting.paillier.util.Utils.fact
 import cats.implicits._
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 import com.evoting.paillier.primes.PrimeNumber
-import cats.effect.Sync
 
 object KeyGeneratorZKP {
 

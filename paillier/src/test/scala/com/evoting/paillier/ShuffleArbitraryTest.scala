@@ -1,7 +1,6 @@
-package com.evoting.paillier
+
 
 import cats.data.EitherT
-import cats.effect.IO
 import cats.effect.SyncIO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.implicits.toTraverseOps
@@ -12,10 +11,9 @@ import com.evoting.paillier.crypto.keys.PrivateThresholdKey
 import com.evoting.paillier.crypto.messages.Ciphertext
 import com.evoting.paillier.crypto.messages.Plaintext
 import com.evoting.paillier.primes.PrimesGenerator.getBigIntRandomStream
-import org.scalatest.Assertion
+import org.scalatest.{Assertion, Ignore}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
-
 
 class ShuffleArbitraryTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
@@ -85,9 +83,7 @@ class ShuffleArbitraryTest extends AsyncFreeSpec with AsyncIOSpec with Matchers 
               }
           }
       }
-      //resultIO.flatten.flatten[Assertion]
-      resultIO.flatMap((e) => e).flatMap((e)=>e)
+      resultIO.flatMap((e)=>e).flatMap((e)=>e)
     }
   }
 }
-

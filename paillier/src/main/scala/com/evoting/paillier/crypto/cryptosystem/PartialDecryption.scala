@@ -6,7 +6,7 @@ import com.evoting.paillier.crypto.messages.Ciphertext
 import com.evoting.paillier.crypto.messages.EncryptedMessage
 import com.evoting.paillier.util.Utils.fact
 
-case class PartialDecryption(pk: PublicKeyLike, l: Int, w: Int, index: Int, partialDecrypted: EncryptedMessage) 
+case class PartialDecryption(pk: PublicKeyLike, l: Int, w: Int, index: Int, partialDecrypted: EncryptedMessage)
 
 object PartialDecryption {
 

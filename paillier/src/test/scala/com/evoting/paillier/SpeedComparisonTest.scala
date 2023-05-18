@@ -1,8 +1,8 @@
-package com.evoting.paillier
+
 
 import cats.data.EitherT
 import cats.effect.Clock
-import cats.effect.IO
+import cats.effect.SyncIO
 import cats.effect.testing.scalatest.AsyncIOSpec
 import cats.effect.unsafe.implicits.global
 import cats.implicits.toTraverseOps
@@ -14,13 +14,12 @@ import com.evoting.paillier.crypto.keys.PrivateThresholdKey
 import com.evoting.paillier.crypto.messages.Ciphertext
 import com.evoting.paillier.crypto.messages.Plaintext
 import com.evoting.paillier.primes.PrimesGenerator.getBigIntRandomStream
-import org.scalatest.Assertion
-import org.scalatest.Succeeded
+import org.scalatest.{Assertion, Ignore, Succeeded}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 /*
-
+@Ignore
 class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
   def measure[R](block: => R, tag: String = ""): R = {
@@ -31,11 +30,11 @@ class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
     result
   }
 
-  def measureIO[R](block: => IO[R], tag: String = ""): IO[R] =
+  def measureIO[R](block: => SyncIO[R], tag: String = ""): SyncIO[R] =
     for {
-      start  <- Clock[IO].realTime
+      start  <- Clock[SyncIO].realTime
       result <- block
-      finish <- Clock[IO].realTime
+      finish <- Clock[SyncIO].realTime
     } yield {
       println(s"$tag: Elapsed ${finish - start}")
       result
@@ -47,7 +46,7 @@ class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
   val bits = 2048 // 1024, 2048, 4096
 
-  val keysIO: IO[Vector[PrivateThresholdKey]] = KeyGenerator.genThresholdKeys(bits, l, w)
+  val keysIO: SyncIO[Vector[PrivateThresholdKey]] = KeyGenerator.genThresholdKeys(bits, l, w)
 
   val MAX_OPTIONS = 32
 
@@ -75,7 +74,7 @@ class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
               val randomIO       = getBigIntRandomStream(keys.head.publicKey.squared.bitLength)
                 .map(_.mod(keys.head.publicKey.squared))
 
-              val verificationIO: EitherT[IO, Throwable, Boolean] = for {
+              val verificationIO: EitherT[SyncIO, Throwable, Boolean] = for {
                 proverParams     <- EitherT.liftF(proverParamsIO)
                 publicMessages   <- EitherT.liftF(randomIO.take(encryptedMessages.length).compile.toVector)
                 publicCiphertexts = publicMessages.map(Ciphertext)
@@ -83,8 +82,8 @@ class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
                 verifierSystem    = ShuffleVerifier(keys.head.publicKey, encryptedMessages, reencryptedMessages, publicCiphertexts)
                 commitment        = measure(proverSystem.calculateCommitment(), "Calculate Commitment")
                 challenge        <- EitherT(measureIO(verifierSystem.generateChallenge(commitment), "Generate Challenge"))
-                response         <- EitherT.fromEither[IO](measure(proverSystem.respondChallenge(challenge), "Respond Challenge"))
-                verification     <- EitherT.fromEither[IO](measure(verifierSystem.verifyResponse(commitment, response), "Verify Response"))
+                response         <- EitherT.fromEither[SyncIO](measure(proverSystem.respondChallenge(challenge), "Respond Challenge"))
+                verification     <- EitherT.fromEither[SyncIO](measure(verifierSystem.verifyResponse(commitment, response), "Verify Response"))
               } yield verification
 
               verificationIO.value.map {
@@ -93,8 +92,7 @@ class SpeedComparisonTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
               }
           }
       }
-      resultIO.flatten.flatten[Assertion]
+      resultIO.flatMap((e) => e).flatMap((e)=>e)
     }
   }
-}
-*/
+}*/

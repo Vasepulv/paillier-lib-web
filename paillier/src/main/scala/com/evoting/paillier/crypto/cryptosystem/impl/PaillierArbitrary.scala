@@ -1,7 +1,7 @@
 package com.evoting.paillier.crypto.cryptosystem.impl
 
-import cats.effect.IO
 import cats.effect.SyncIO
+import cats.effect.IO
 import cats.implicits._
 import com.evoting.paillier.crypto.PaillierExceptions.AdditionException
 import com.evoting.paillier.crypto.PaillierExceptions.EncryptionException

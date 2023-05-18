@@ -1,6 +1,5 @@
 package com.evoting.paillier.crypto.cryptosystem.impl.shuffle
 
-import cats.effect.IO
 import cats.effect.SyncIO
 import com.evoting.paillier.crypto.cryptosystem.PaillierLike
 import com.evoting.paillier.crypto.messages.CiphertextWithRandomness

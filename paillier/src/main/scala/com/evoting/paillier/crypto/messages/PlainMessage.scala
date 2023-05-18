@@ -1,5 +1,6 @@
-package com.evoting.paillier.crypto.messages
 
+
+package com.evoting.paillier.crypto.messages
 import com.evoting.paillier.Exportable
 
 import java.util.Base64

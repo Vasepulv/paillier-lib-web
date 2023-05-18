@@ -1,7 +1,6 @@
-package com.evoting.paillier
+
 
 import cats.data.EitherT
-import cats.effect.IO
 import cats.effect.SyncIO
 import com.evoting.paillier.crypto.keys.KeyGenerator
 import com.evoting.paillier.crypto.keys.PrivateThresholdKey
@@ -17,12 +16,11 @@ import com.evoting.paillier.crypto.cryptosystem.impl.shuffle.VerifiableShuffle
 import com.evoting.paillier.crypto.messages.Ciphertext
 import com.evoting.paillier.crypto.messages.Plaintext
 import com.evoting.paillier.primes.PrimesGenerator.getBigIntRandomStream
-import org.scalatest.Assertion
-import org.scalatest.Succeeded
+import org.scalatest.{Assertion, Ignore, Succeeded}
 import org.scalatest.freespec.AsyncFreeSpec
 import org.scalatest.matchers.should.Matchers
 
-/*
+
 class ShuffleTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
 
   def time[R](block: => R): R = {
@@ -102,7 +100,7 @@ class ShuffleTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
           }
       }
 
-      resultIO.flatMap((e)=>e)
+      resultIO.flatMap((x) => x)
     }
   }
 
@@ -154,7 +152,7 @@ class ShuffleTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
               )
           }
       }
-      resultIO.flatMap((e)=>e)
+      resultIO.flatMap((x) => x)
     }
   }
 
@@ -200,7 +198,7 @@ class ShuffleTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
               }
           }
       }
-      resultIO.flatMap((e)=>e).flatMap((e)=>e)
+      resultIO.flatMap((e) => e).flatMap((e)=>e)
     }
   }
 
@@ -298,8 +296,7 @@ class ShuffleTest extends AsyncFreeSpec with AsyncIOSpec with Matchers {
               }
           }
       }
-      resultIO.flatMap((e)=>e).flatMap((e)=>e)
+      resultIO.flatMap((e) => e).flatMap((e)=>e)
     }
   }
 }
-*/

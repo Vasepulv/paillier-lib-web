@@ -1,6 +1,6 @@
+
 package com.evoting.paillier.crypto.keys
 
-import cats.effect.IO
 import cats.effect.SyncIO
 import com.evoting.paillier.primes.PrimesGenerator._
 import cats.implicits._

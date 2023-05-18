@@ -5,19 +5,40 @@ import java.security.SecureRandom
 import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.SyncIO
+import cats.data.EitherT
 import com.evoting.paillier.primes.PrimesGenerator
+import com.evoting.paillier.crypto.keys.PublicKey
 import com.evoting.paillier.crypto.cryptosystem.impl.Paillier
-import com.evoting.paillier.crypto.messages.Ciphertext
-import com.evoting.paillier.crypto.messages.Plaintext
+import com.evoting.paillier.crypto.cryptosystem.PartialDecryption
+import com.evoting.paillier.crypto.messages._
 import com.evoting.paillier.crypto.keys.KeyGenerator
 import com.evoting.paillier.crypto.keys.PrivateThresholdKey
+import com.evoting.paillier.crypto.PaillierExceptions.AdditionException
+import com.evoting.paillier.crypto.PaillierExceptions.DecryptionException
+import com.evoting.paillier.crypto.PaillierExceptions.EncryptionException
+
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation.{JSExportTopLevel, JSImport}
+import scala.scalajs.LinkingInfo
 import org.scalajs.dom
-import com.raquo.laminar.api.L._
-import com.raquo.laminar.api.features.unitArrows
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.html_<^._
+
+import slinky.core._
+import slinky.web.ReactDOM
+import slinky.web.html._
+import slinky.core.annotations.react
+import slinky.web.html._
+
+@JSImport("/src/index.css", JSImport.Default)
+@js.native
+object IndexCSS extends js.Object
+
 object Main //extends IOApp.Simple
 {
+  val css = IndexCSS
+
   def generateTextParagraph(): Unit = {
     import org.scalajs.dom.document
     val paragraph = document.createElement("p")
@@ -25,58 +46,63 @@ object Main //extends IOApp.Simple
     document.body.appendChild(paragraph)
 }
 
-  def getCiphertext(bigint:BigInt,keysIO:SyncIO[Vector[PrivateThresholdKey]]):String ={
-    val plaintext = Plaintext(bigint)
 
-    val resultIO = for {
+  @react class ElectionReact extends Component{
+    case class Props(length: Int, amount:Int, l:Int, w:Int)
+
+    case class State(plaintext:BigInt)
+
+    def initialState: State=State(BigInt(0))
+
+    val keysIO: SyncIO[Vector[PrivateThresholdKey]] = KeyGenerator.genThresholdKeys((props.length+2)*32, props.l, props.w)
+
+    private def superEncrypt()= {
+
+      val plaintext= state.plaintext
+
+      val resultIO = for {
         keys          <- keysIO
         paillierSystem = new Paillier(keys.head.publicKey)
-        ciphertext    <- paillierSystem.encrypt(plaintext)
+        ciphertext    <- paillierSystem.encrypt(Plaintext(plaintext))
       } yield (keys, paillierSystem, ciphertext)
 
-
-    val (keys, paillier, ciphertext)=resultIO.unsafeRunSync()
-    val result=ciphertext match {
-      case Left(err)=>"ERROR"
-      case Right(cipher)=>cipher.toBigInt.toString
+      val result =resultIO.map{
+        case (keys, paillierSystem, ciphertext) => ciphertext match{
+          case Left(err) =>
+          case Right(cipher) => keys.combinations(props.w).map{
+            e => paillierSystem.combine(e.map(p => PartialDecryption(p, cipher)))
+          }.toList
+        }
+      }
+      println(result.unsafeRunSync())
     }
-    result
+
+    def encryptHandle(bigint:BigInt)={
+      setState(State(bigint))
+      this.superEncrypt()
+    }
+
+    def render()={
+      div(Sheet(props.length, props.amount, state.plaintext, this.encryptHandle))
+    }
   }
 
   
-
+  @JSExportTopLevel("main")
   def main(args: Array[String]): Unit = {
     //generateTextParagraph()
-    lazy val appContainer=dom.document.createElement("div")
-    appContainer.id="appContainer"
-    dom.document.body.appendChild(appContainer)
+    import org.scalajs.dom.document
 
-    val keysIO: SyncIO[Vector[PrivateThresholdKey]] = KeyGenerator.genThresholdKeys(512, 5, 3)
+    val length = 5
+    val amount = 3
+    val l=3
+    val w =2
     
- 
-    val diffBus = new EventBus[String]
-    val cipherBus=new EventBus[String]
-    val inputMods = Seq(typ := "text", defaultValue := "1") 
-    val keys=keysIO.unsafeRunSync().toSeq
-    val keyStream =EventStream.fromSeq(keys.map(e => e.publicKey.toBigInt.toString))
-    
-    val example=div(
-      h2("Genere un numero entero grande", color := "red"),
-      input(inputMods, nameAttr := "numeroGrande", 
-      value <-- cipherBus, onInput.mapToValue --> cipherBus),
-      div(s"${nbsp}"),
-      button("Click",color :="red", typ("button"),value <-- cipherBus, onClick.mapToValue --> diffBus )      //button(onClick()-->)
+    ReactDOM.render(
+      div(ElectionReact(length,amount,l,w)),
+      document.getElementById("root")
     )
-    val diffStream: EventStream[String]=diffBus.events
-    val stream:EventStream[String]=diffStream.map(e => getCiphertext(BigInt(e),keysIO))
 
-    val example2=div(
-      div("Llave escogida: ", child.text <-- keyStream),
-      div("Valor escogido: ",child.text <-- diffStream),
-      div("Resultado (Encriptado): ", child.text <-- stream)
-    )
-    val root: RootNode = render(appContainer, example)
-    render(appContainer,example2)
 }
 
 }

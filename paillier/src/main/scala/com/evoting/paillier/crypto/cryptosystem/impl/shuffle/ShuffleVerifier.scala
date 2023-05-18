@@ -1,6 +1,5 @@
 package com.evoting.paillier.crypto.cryptosystem.impl.shuffle
 
-import cats.effect.IO
 import cats.effect.SyncIO
 import cats.implicits.toTraverseOps
 import com.evoting.paillier.crypto.keys.PublicKeyLike
