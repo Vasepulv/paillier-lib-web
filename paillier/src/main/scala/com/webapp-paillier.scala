@@ -16,6 +16,12 @@ import com.evoting.paillier.crypto.keys.PrivateThresholdKey
 import com.evoting.paillier.crypto.PaillierExceptions.AdditionException
 import com.evoting.paillier.crypto.PaillierExceptions.DecryptionException
 import com.evoting.paillier.crypto.PaillierExceptions.EncryptionException
+import com.evoting.paillier.crypto.cryptosystem.impl.zkp.PaillierZKP
+
+import org.scalajs.dom.document
+
+
+import scala.concurrent.Future
 
 
 import scala.scalajs.js
@@ -31,21 +37,16 @@ import slinky.web.html._
 import slinky.core.annotations.react
 import slinky.web.html._
 
-@JSImport("/src/index.css", JSImport.Default)
+import com.BenchmarkPlot._
+import com.Sheet._
+
+@JSImport("/src/style.css", JSImport.Default)
 @js.native
 object IndexCSS extends js.Object
 
 object Main //extends IOApp.Simple
 {
   val css = IndexCSS
-
-  def generateTextParagraph(): Unit = {
-    import org.scalajs.dom.document
-    val paragraph = document.createElement("p")
-    paragraph.textContent = "Esta es una pagina de prueba2"
-    document.body.appendChild(paragraph)
-}
-
 
   @react class ElectionReact extends Component{
     case class Props(length: Int, amount:Int, l:Int, w:Int)
@@ -54,54 +55,53 @@ object Main //extends IOApp.Simple
 
     def initialState: State=State(BigInt(0))
 
-    val keysIO: SyncIO[Vector[PrivateThresholdKey]] = KeyGenerator.genThresholdKeys((props.length+2)*32, props.l, props.w)
+    val keysIO: SyncIO[Either[Throwable,Vector[PrivateThresholdKey]]] = KeyGenerator.genThresholdKeys((props.length+2)*32, props.l, props.w).map(Right(_))
 
-    private def superEncrypt()= {
+    var possible_messages:List[PlainMessage]=generateValidMessages(props.amount, props.length)
+
+    private def superEncrypt()
+      //:List[Either[Throwable, PlainMessage]]
+      ={
 
       val plaintext= state.plaintext
 
-      val resultIO = for {
-        keys          <- keysIO
-        paillierSystem = new Paillier(keys.head.publicKey)
-        ciphertext    <- paillierSystem.encrypt(Plaintext(plaintext))
-      } yield (keys, paillierSystem, ciphertext)
+      val resultIO:EitherT[SyncIO,Throwable, Boolean] = for {
+        keys          <- EitherT(keysIO)
+        paillierSystemZKP = new PaillierZKP(keys.head.publicKey,possible_messages)
+        ciphertext    <- EitherT(paillierSystemZKP.encryptWithZKP(Plaintext(plaintext)))
+        validCipher <- EitherT(paillierSystemZKP.verifyZKP(ciphertext))
+      } yield (validCipher)
 
-      val result =resultIO.map{
+      /*val result:SyncIO[List[Either[Throwable, PlainMessage]]] =resultIO.map{
         case (keys, paillierSystem, ciphertext) => ciphertext match{
-          case Left(err) =>
+          case Left(err) => List(Left(DecryptionException("Error al desencriptar")))
           case Right(cipher) => keys.combinations(props.w).map{
             e => paillierSystem.combine(e.map(p => PartialDecryption(p, cipher)))
           }.toList
         }
-      }
+      }*/
+
+      val result=resultIO.value
+    
+      println(possible_messages.length)
       println(result.unsafeRunSync())
     }
 
     def encryptHandle(bigint:BigInt)={
-      setState(State(bigint))
-      this.superEncrypt()
+      setState(State(bigint), () =>this.superEncrypt())
     }
 
     def render()={
-      div(Sheet(props.length, props.amount, state.plaintext, this.encryptHandle))
+      Sheet(props.length, props.amount, state.plaintext, this.encryptHandle)
     }
   }
-
   
-  @JSExportTopLevel("main")
-  def main(args: Array[String]): Unit = {
+  @JSExportTopLevel("encrypt", moduleID="encryption")
+  def encrypt(length:Int, amount:Int, l:Int, w:Int): Unit = {
     //generateTextParagraph()
-    import org.scalajs.dom.document
-
-    val length = 5
-    val amount = 3
-    val l=3
-    val w =2
-    
     ReactDOM.render(
       div(ElectionReact(length,amount,l,w)),
-      document.getElementById("root")
-    )
+      document.getElementById("root"))
 
 }
 
