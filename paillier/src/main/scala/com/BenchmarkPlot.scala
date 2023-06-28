@@ -43,9 +43,11 @@ object BenchmarkPlot{
         val nullVote=List("0|1|"+("0"*length))
    
         val totalList:List[String]=nullVote.head :: blankV.head :: z
+        println(totalList)
+        println(totalList.length)
         val possible_messages= totalList.map(e => Plaintext(encodeToBigInt(e, length)))
 
-        //println(possible_messages)
+        
         possible_messages
 
     }

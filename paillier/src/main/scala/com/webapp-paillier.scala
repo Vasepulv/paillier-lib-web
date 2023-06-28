@@ -17,6 +17,7 @@ import com.evoting.paillier.crypto.PaillierExceptions.AdditionException
 import com.evoting.paillier.crypto.PaillierExceptions.DecryptionException
 import com.evoting.paillier.crypto.PaillierExceptions.EncryptionException
 import com.evoting.paillier.crypto.cryptosystem.impl.zkp.PaillierZKP
+import com.evoting.paillier.crypto.cryptosystem.impl.zkp._
 
 import org.scalajs.dom.document
 
@@ -31,14 +32,12 @@ import org.scalajs.dom
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
-import slinky.core._
-import slinky.web.ReactDOM
-import slinky.web.html._
-import slinky.core.annotations.react
-import slinky.web.html._
+import com.github.plokhotnyuk.jsoniter_scala.macros._
+import com.github.plokhotnyuk.jsoniter_scala.core._
 
 import com.BenchmarkPlot._
 import com.Sheet._
+
 
 @JSImport("/src/style.css", JSImport.Default)
 @js.native
@@ -46,63 +45,44 @@ object IndexCSS extends js.Object
 
 object Main //extends IOApp.Simple
 {
-  val css = IndexCSS
+  val css = IndexCSS  
 
-  @react class ElectionReact extends Component{
-    case class Props(length: Int, amount:Int, l:Int, w:Int)
-
-    case class State(plaintext:BigInt)
-
-    def initialState: State=State(BigInt(0))
-
-    val keysIO: SyncIO[Either[Throwable,Vector[PrivateThresholdKey]]] = KeyGenerator.genThresholdKeys((props.length+2)*32, props.l, props.w).map(Right(_))
-
-    var possible_messages:List[PlainMessage]=generateValidMessages(props.amount, props.length)
-
-    private def superEncrypt()
-      //:List[Either[Throwable, PlainMessage]]
-      ={
-
-      val plaintext= state.plaintext
-
-      val resultIO:EitherT[SyncIO,Throwable, Boolean] = for {
-        keys          <- EitherT(keysIO)
-        paillierSystemZKP = new PaillierZKP(keys.head.publicKey,possible_messages)
-        ciphertext    <- EitherT(paillierSystemZKP.encryptWithZKP(Plaintext(plaintext)))
-        validCipher <- EitherT(paillierSystemZKP.verifyZKP(ciphertext))
-      } yield (validCipher)
-
-      /*val result:SyncIO[List[Either[Throwable, PlainMessage]]] =resultIO.map{
-        case (keys, paillierSystem, ciphertext) => ciphertext match{
-          case Left(err) => List(Left(DecryptionException("Error al desencriptar")))
-          case Right(cipher) => keys.combinations(props.w).map{
-            e => paillierSystem.combine(e.map(p => PartialDecryption(p, cipher)))
-          }.toList
-        }
-      }*/
-
-      val result=resultIO.value
-    
-      println(possible_messages.length)
-      println(result.unsafeRunSync())
-    }
-
-    def encryptHandle(bigint:BigInt)={
-      setState(State(bigint), () =>this.superEncrypt())
-    }
-
-    def render()={
-      Sheet(props.length, props.amount, state.plaintext, this.encryptHandle)
-    }
-  }
   
-  @JSExportTopLevel("encrypt", moduleID="encryption")
-  def encrypt(length:Int, amount:Int, l:Int, w:Int): Unit = {
-    //generateTextParagraph()
-    ReactDOM.render(
-      div(ElectionReact(length,amount,l,w)),
-      document.getElementById("root"))
+  implicit val codec: JsonValueCodec[List[Plaintext]] = JsonCodecMaker.make(CodecMakerConfig)
 
-}
+  implicit val codec2: JsonValueCodec[EncryptedMessageWithCommitmentZKP] = JsonCodecMaker.make{CodecMakerConfig
+        .withAllowRecursiveTypes(true)}
+ 
+  @JSExportTopLevel("encrypt", moduleID="encryption")
+  def encrypt(toEncrypt: String, length:Int, amount:Int, l:Int, w:Int): String = {
+
+    var possible_messages:List[PlainMessage]=generateValidMessages(amount, length)
+    val keysIO: SyncIO[Either[Throwable,Vector[PrivateThresholdKey]]] = KeyGenerator.genThresholdKeys((length+2)*32, l, w).map(Right(_))
+    
+    val plaintext= Plaintext(BigInt(toEncrypt))
+    val paillier:EitherT[SyncIO, Throwable, PaillierZKP]=for{
+        keys <- EitherT(keysIO)
+        paillierSystemZKP= new PaillierZKP(keys.head.publicKey,possible_messages)
+      } yield(paillierSystemZKP)
+
+    var startTime=System.currentTimeMillis()
+
+    val resultIO:EitherT[SyncIO,Throwable, EncryptedMessageWithCommitmentZKP] = for {
+        paillierSystemZKP <- paillier
+        ciphertext    <- EitherT(paillierSystemZKP.encryptWithZKP(plaintext))
+        validCipher <- EitherT(paillierSystemZKP.verifyZKP(ciphertext))
+      } yield (ciphertext)
+
+    val result=resultIO.value
+    val res=result.unsafeRunSync()
+    val res2= res match{
+        case Left(err) => ""
+        case Right(enc) => writeToString(enc)
+      }
+    val endTime=System.currentTimeMillis()
+    val r=endTime-startTime
+    println(r)
+    res2
+  }
 
 }

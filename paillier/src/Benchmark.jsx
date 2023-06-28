@@ -77,10 +77,3 @@ const layout={xaxis:{title:"Cantidad de Candidatos"}, yaxis:{title:"Tiempo (ms)"
 Plotly.newPlot('root_benchmark', [dataPlot], layout)
 
 
-/*const xArrayAmount=Array.from({length:50},(_, index) => index+10)
-const amountArrayC=Array.from({length:10},(_,index)=> index+1)
-const yArrayCombinations=xArrayAmount.map(f => 1 + amountArrayC.map(e => combinations(f,e)).reduce((l,r)=>l+r,0))
-const yArrayAmount=xArrayAmount.map(f => amountArrayC.map(e => BenchmarkPlot.generateValidMessages(e,f).length))
-console.log(yArrayCombinations)
-console.log(yArrayAmount)*/
-

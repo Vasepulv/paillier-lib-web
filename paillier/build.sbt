@@ -14,6 +14,9 @@ lazy val catsEffect = "3.3.0"
 
 lazy val fs2 = "3.2.3"
 
+val http4sVersion = "0.23.19"
+
+
 // To publish in both scala version we do:  `sbt +publish`
 crossScalaVersions := Seq(scala213, scala302)
 
@@ -30,7 +33,6 @@ lazy val paillier=project.in(file("."))
 .settings(
   scalaVersion := "2.13.6",  
   scalacOptions += "-Ymacro-annotations",
-  scalaJSUseMainModuleInitializer := true,
 
     /* Configure Scala.js to emit modules in the optimal way to
      * connect to Vite's incremental reload.
@@ -42,8 +44,9 @@ lazy val paillier=project.in(file("."))
     scalaJSLinkerConfig ~= {
       _.withModuleKind(ModuleKind.ESModule)
         .withModuleSplitStyle(
-          ModuleSplitStyle.SmallModulesFor(List("paillier")))
+          ModuleSplitStyle.FewestModules)
     },
+    
 
     /* Depend on the scalajs-dom library.
      * It provides static types for the browser DOM APIs.
@@ -85,6 +88,20 @@ libraryDependencies ++= Seq(
   "co.fs2"        %%% "fs2-io"               % fs2,
   "co.fs2"        %% "fs2-reactive-streams" % fs2
 ),
-   
+libraryDependencies += "io.github.pityka" %%% "nspl-canvas-js" % "0.10.0",
+
+libraryDependencies ++= Seq(
+  "org.http4s" %%% "http4s-ember-client" % http4sVersion,
+  "org.http4s" %%% "http4s-ember-server" % http4sVersion,
+  "org.http4s" %%% "http4s-dsl"          % http4sVersion,
+),
+ libraryDependencies ++= Seq(
+  // Use the %%% operator instead of %% for Scala.js and Scala Native 
+  "com.github.plokhotnyuk.jsoniter-scala" %%% "jsoniter-scala-core"   % "2.23.2",
+  // Use the "provided" scope instead when the "compile-internal" scope is not supported  
+  "com.github.plokhotnyuk.jsoniter-scala" %%% "jsoniter-scala-macros" % "2.23.2" % "compile-internal"
+)
+
+
 )
 
